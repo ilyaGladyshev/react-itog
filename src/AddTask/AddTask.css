@@ -1,0 +1,7 @@
+.add-task-container{
+    align-items: center;
+    justify-content: center;
+}
+.add-task-container__form{
+    color: lightcyan;
+}
