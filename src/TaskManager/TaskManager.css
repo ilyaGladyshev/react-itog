@@ -1,0 +1,27 @@
+.task-container{
+    max-width: 600px;
+    margin: 0 auto;
+}
+.head{
+    display: flex;
+    justify-content: space-between;
+}
+.filters{
+    display: flex;
+    margin-bottom: 15px;
+    margin-top: 5%;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+.__fiters_button-complited_hide{
+    background: #6c755d;
+    color: #fff
+}
+.__fiters_button_non-hide{
+    background: #e2e3e5;
+    color: #000
+}
+.__fiters_button-urgent_hide{
+    background: #dc3545;
+    color: #fff
+}

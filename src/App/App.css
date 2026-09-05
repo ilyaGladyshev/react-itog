@@ -1,3 +1,18 @@
+input{
+  display: block;
+  margin-bottom: 10px;
+  padding: 8px;
+}
+h4{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+h3{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .App {
   text-align: center;
 }

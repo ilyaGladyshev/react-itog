@@ -1,3 +1,27 @@
+form{
+    padding: 15 px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px; 
+}
+
+textarea{
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+button{
+    padding: 8px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+ }
+
 .add-task-container{
     align-items: center;
     justify-content: center;

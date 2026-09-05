@@ -1,7 +1,14 @@
-.authorisation-container{
+input{
+    width: 100%;
+}
+form{
+    color: lightcyan;
+}
+button{
+    padding: 8px 15px;
+}
+.autorization-form{
+    display: flex;
     align-items: center;
     justify-content: center;
-}
-.authorisation-container_form{
-    color: lightcyan;
 }

@@ -1,0 +1,21 @@
+{
+    "lastId": 5,
+    "tasks": [
+        {
+            "id": 2,
+            "title": "JS",
+            "description": "срочно выучить JS",
+            "status": "Выполнено",
+            "author": "ilya",
+            "priority": 2
+        },
+        {
+            "id": 3,
+            "title": "JAVA",
+            "description": "Выучить JAVA",
+            "status": "В планах",
+            "author": "ilya",
+            "priority": 1
+        }
+    ]
+}
