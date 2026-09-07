@@ -1,15 +1,16 @@
 import fs from "fs/promises";
 import path from "path"; 
 import { fileURLToPath } from "url";
-import crypto from "crypto";
+import bcryptjs from "bcryptjs";
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 const USERS_FILE_PATH = path.join(_dirname ,"users.json");
 const TASKS_FILE_PATH = path.join(_dirname ,"tasks.json");
  
-function hashPassword(password){
+async function hashPassword(password){
     if (!password) return '';
-    return crypto.createHash('sha256').update(password).digest('hex');
+    return await bcryptjs.hash(password, 10);
+    //return crypto.createHash('sha256').update(password).digest('hex');
 }
 
 export async function readUsers() {
@@ -88,12 +89,16 @@ export async function findUserBylogin(login, password){
     if (!login) return null;
     const users = await readUsers();
     const lowerLogin = login.toString().toLowerCase();
-    if (users[lowerLogin]){
-        const currentHash = users[lowerLogin].passwordHash;
-        const inputHash = hashPassword(password);
+    const user = users[lowerLogin];
+    if (user){
+        const currentHash = user.passwordHash;
         console.log(currentHash);
-        console.log(inputHash);
-        if (inputHash === currentHash) return { login: lowerLogin, ...users[lowerLogin]};
+        const isMatch = await bcryptjs.compare(password, currentHash);
+        console.log(isMatch);
+        if (isMatch) {
+            const {passwordHash, ...dataForReturn} = user;
+            return { login: lowerLogin, ...dataForReturn};
+        }
     }    
     return null;
 }
@@ -106,7 +111,7 @@ export async function createUser(login, firstName, lastName, middleName, dateBir
 			lastName : lastName,
 			middleName : middleName,
             dateBirth: dateBirth,
-            passwordHash: hashPassword(password)
+            passwordHash: await hashPassword(password)
 		};
 		await writeUsers(users);
         return {login: lowerLogin, ...users[lowerLogin]};		

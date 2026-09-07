@@ -31,12 +31,10 @@ const server = http.createServer(async (req, res) =>{
     
         if (req.method === 'POST' && pathname === '/api/check-user')  {
             const { login, password } = await getRequestBody(req);
-            console.log(login);
             if (!login){
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Логин не указан"}));
             }
-            console.log(password);
             if (!password){
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Пароль не указан"}));
@@ -58,7 +56,7 @@ const server = http.createServer(async (req, res) =>{
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Заполнены не все обязательные поля"}));
             }
-            const existingUser = await findUserBylogin(login); 
+            const existingUser = await findUserBylogin(login, password); 
             if (existingUser){
                 res.writeHead(409, jsonHeader);
                 return res.end(JSON.stringify({error: "Этот логин уже занят"}));

@@ -1,21 +1,13 @@
 {
-    "lastId": 7,
+    "lastId": 2,
     "tasks": [
         {
-            "id": 6,
-            "title": "PYTHON",
-            "description": "Не срочно выучить Python",
+            "id": 2,
+            "title": "REACT",
+            "description": "не срочно выучить REACT",
             "status": "В планах",
             "author": "ilya",
             "priority": 2
-        },
-        {
-            "id": 7,
-            "title": "REACT",
-            "description": "Сделать приложение REACT",
-            "status": "В планах",
-            "author": "nikolay",
-            "priority": 1
         }
     ]
 }
