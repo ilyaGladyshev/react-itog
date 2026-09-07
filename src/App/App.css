@@ -1,18 +1,48 @@
-input{
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+input[type='text'], select, textarea{
   display: block;
-  margin-bottom: 10px;
-  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  padding: 12px;
 }
-h4{
+
+input:focus, select:focus, textarea:focus{
+  outline: none;
+  border-color: #007bff;
+}
+
+button{
+    padding: 12px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+ }
+
+ button:active{
+  transform: scale(o.98);
+ }
+
+h2,h3,h4{
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 0;
+  color: #1a1a1a;
 }
-h3{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
 .App {
   text-align: center;
 }

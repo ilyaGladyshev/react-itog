@@ -1,11 +1,17 @@
 import fs from "fs/promises";
 import path from "path"; 
 import { fileURLToPath } from "url";
+import crypto from "crypto";
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 const USERS_FILE_PATH = path.join(_dirname ,"users.json");
 const TASKS_FILE_PATH = path.join(_dirname ,"tasks.json");
-  
+ 
+function hashPassword(password){
+    if (!password) return '';
+    return crypto.createHash('sha256').update(password).digest('hex');
+}
+
 export async function readUsers() {
     try {
         const data = await fs.readFile(USERS_FILE_PATH, 'utf-8');
@@ -64,29 +70,43 @@ export async function writeTasks(tasksObject) {
     }
 }
 
+/*export async function checkUser(userObject){
+    try {
+        
+    } catch (error) {
+        console.log("Не удалось пройти авторизацию: " + error.message);
+        return false;          
+    }
+}*/
+
 export async function getTasksByAuthor(author) {
     const data = await readTasks();
     return data.tasks.filter(task => task.author === author.toLowerCase());
 }
 
-export async function findUserBylogin(login){
+export async function findUserBylogin(login, password){
     if (!login) return null;
     const users = await readUsers();
     const lowerLogin = login.toString().toLowerCase();
     if (users[lowerLogin]){
-        return { login: lowerLogin, ...users[lowerLogin]};
+        const currentHash = users[lowerLogin].passwordHash;
+        const inputHash = hashPassword(password);
+        console.log(currentHash);
+        console.log(inputHash);
+        if (inputHash === currentHash) return { login: lowerLogin, ...users[lowerLogin]};
     }    
     return null;
 }
 
-export async function createUser(login, firstName, lastName, middleName, dateBirth) {
+export async function createUser(login, firstName, lastName, middleName, dateBirth, password){
 		const users = await readUsers();
         const lowerLogin = login.toLowerCase().trim();
 		users[lowerLogin] = {
-			firstName : firstName,
+            firstName : firstName,
 			lastName : lastName,
 			middleName : middleName,
-            dateBirth: dateBirth
+            dateBirth: dateBirth,
+            passwordHash: hashPassword(password)
 		};
 		await writeUsers(users);
         return {login: lowerLogin, ...users[lowerLogin]};		

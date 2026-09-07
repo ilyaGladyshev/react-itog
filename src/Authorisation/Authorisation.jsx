@@ -11,8 +11,9 @@ const Authorisation = ({onLoginSuccess}) => {
 	const [userList, setUserList] = useState([]);
 	const [loadind, setLoading] = useState(false);
 	const [login, setLogin] = useState('');
+	const [password, setPassword] = useState('');	
 	const [selectedLogin, setSelectedLogin] = useState('');
-	const [fullName, setFullName] =useState({firstName : '', lastName : '', middleName : '', dateBirth: ''})
+	const [fullName, setFullName] =useState({firstName : '', lastName : '', middleName : '', dateBirth: '',password: ''})
 	
 	useEffect(() =>{
 		async function fetchUsers() {
@@ -45,10 +46,10 @@ const Authorisation = ({onLoginSuccess}) => {
 				const response = await fetch('/api/check-user', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json'},
-					body: JSON.stringify({login: selectedLogin})
+					body: JSON.stringify({login: selectedLogin, password: password})
 				});
 				const data = await response.json();
-				if (data.status === 'exists'){
+				if (data.status === 'exists') {
 					alert(`С возвращением, ${data.user.firstName}!`);
 					onLoginSuccess(data.user);
 				}
@@ -94,6 +95,14 @@ const Authorisation = ({onLoginSuccess}) => {
 		setFullName({...fullName, dateBirth : e.target.value});		
 	}
 
+	const changeNewPassword = (e) =>{
+		setFullName({...fullName, password : e.target.value});
+	}
+
+	const changePassword = (e) =>{
+		setPassword(e.target.value);
+	}
+	
 	const writeNewUser = async (e) => {
 		e.preventDefault();
 		if (login.trim() === ""){
@@ -104,7 +113,9 @@ const Authorisation = ({onLoginSuccess}) => {
 			console.log("Введите фамилию!");
 		} else if (fullName.dateBirth === ""){
 			console.log("Введите дату рождения!");			
-		} else{
+		} else if (fullName.password === ""){
+			console.log("Введите пароль!");			
+		}else{
 			setLoading(true);
 			try {
 				const response = await fetch('/api/register', {
@@ -115,7 +126,8 @@ const Authorisation = ({onLoginSuccess}) => {
 						firstName: fullName.firstName.trim(),
 						lastName: fullName.lastName.trim(),
 						middleName: fullName.middleName.trim(),
-						dateBirth: fullName.dateBirth.trim()
+						dateBirth: fullName.dateBirth.trim(),
+						password: fullName.password.trim()
 					})
 				});
 				const data = await response.json();
@@ -146,6 +158,7 @@ const Authorisation = ({onLoginSuccess}) => {
 						onResetAuthorisation();
 					}}>
 					<ComboBox listValues={userList} propsName="login" placeholder="Ваш логин" onChangeProps={loginOnChange} />
+					<FullInput type='password' propsName="password" onChangeProps={changePassword} /> 
 					<button type="submit">Войти</button>
 					<button type="reset">Отмена</button>
 				</form>
@@ -161,6 +174,7 @@ const Authorisation = ({onLoginSuccess}) => {
 					<LessInput propsName="surname" placeholder="Ваше фамилия" type="text" onChangeProps={changeLastName} />
 					<LessInput propsName="lastname" placeholder="Ваше отчество" type="text" onChangeProps={changeMiddleName} />				
 					<FullInput type='date' propsName="dateBirth" onChangeProps={changeDate}/>
+					<FullInput type='text-area' propsName="newPassword" placeholder="Пароль" onChangeProps={changeNewPassword} />						
 					<button type="submit">Зарегистрировать нового пользователя</button>
 					<button type="reset">Отмена</button>
 				</form>

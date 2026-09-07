@@ -1,20 +1,20 @@
 {
-    "lastId": 5,
+    "lastId": 7,
     "tasks": [
         {
-            "id": 2,
-            "title": "JS",
-            "description": "срочно выучить JS",
-            "status": "Выполнено",
+            "id": 6,
+            "title": "PYTHON",
+            "description": "Не срочно выучить Python",
+            "status": "В планах",
             "author": "ilya",
             "priority": 2
         },
         {
-            "id": 3,
-            "title": "JAVA",
-            "description": "Выучить JAVA",
+            "id": 7,
+            "title": "REACT",
+            "description": "Сделать приложение REACT",
             "status": "В планах",
-            "author": "ilya",
+            "author": "nikolay",
             "priority": 1
         }
     ]

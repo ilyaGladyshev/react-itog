@@ -1,7 +1,6 @@
 import React from "react";
 import FullInput from "../Inputs/FullInput.jsx";
 import LessInput from "../Inputs/LessInput.jsx";
-import './User.css';
 
 const User = ({OnAddUser, OnCloseUser}) => {
 	

@@ -4,6 +4,7 @@ import { findUserBylogin, createUser, readUsers,
     readTasks, writeTasks, completeTaskById, getTasksByAuthor,
     createTask, deleteTaskById, exportTasks
  } from './jsonMoker.js';
+import { Console } from 'console';
 
 function getRequestBody(req){
     return new Promise ((resolve, reject) => {
@@ -29,12 +30,18 @@ const server = http.createServer(async (req, res) =>{
     try {
     
         if (req.method === 'POST' && pathname === '/api/check-user')  {
-            const { login } = await getRequestBody(req);
+            const { login, password } = await getRequestBody(req);
+            console.log(login);
             if (!login){
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Логин не указан"}));
             }
-            const user = await findUserBylogin(login);
+            console.log(password);
+            if (!password){
+                res.writeHead(400, jsonHeader);
+                return res.end(JSON.stringify({error: "Пароль не указан"}));
+            }
+            const user = await findUserBylogin(login, password);
             res.writeHead(200, jsonHeader);            
             if (user){
                 return res.end(JSON.stringify({
@@ -46,8 +53,8 @@ const server = http.createServer(async (req, res) =>{
             }
         } 
         else if (req.method === 'POST' && pathname === '/api/register'){
-            const { login, firstName, lastName, middleName, dateBirth} = await getRequestBody(req);
-            if (!login || !firstName || !lastname || !dateBirth){
+            const { login, firstName, lastName, middleName, dateBirth, password} = await getRequestBody(req);
+            if (!login || !firstName || !lastName || !dateBirth){
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Заполнены не все обязательные поля"}));
             }
@@ -56,7 +63,8 @@ const server = http.createServer(async (req, res) =>{
                 res.writeHead(409, jsonHeader);
                 return res.end(JSON.stringify({error: "Этот логин уже занят"}));
             }   
-            const newUser = await createUser(login, firstName, lastName, middleName, dateBirth)
+            const newUser = await createUser(login, firstName, lastName,
+                 middleName, dateBirth, password);
             res.writeHead(201, jsonHeader);
             return res.end(JSON.stringify({
                 success: true,

@@ -22,7 +22,9 @@ const FullInput = ({type, placeholder, propsName, onChangeProps}) => {
 			);
 		case 'password':
 			return(
-				<input name={propsName} type='password' calssName={isValid ? 'is-not-valid' : 'valid'} />
+				<input name={propsName} type='password' 
+				onChange={onChangeProps}
+				calssName={'valid'} />
 			);		
 		case 'text-area':
 			return(
