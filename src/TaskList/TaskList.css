@@ -14,14 +14,14 @@ button{
     background-color: rgb(133, 15, 15);
 }
 .task{
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #ddd;
     padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    border-radius: 12px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     justify-content: space-between;
 }
 .description{

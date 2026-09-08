@@ -1,4 +1,4 @@
-import RouterMenu from "../RouterMenu.jsx"
+import RouterMenu from "../RouterMenu/RouterMenu.jsx"
 import './App.css';
 
 function App() {

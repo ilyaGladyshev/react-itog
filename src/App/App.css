@@ -43,6 +43,62 @@ h2,h3,h4{
   color: #1a1a1a;
 }
 
+.theme-container{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.app-container{
+    max-width: 650px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    color: #333;
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.app-container.dark-theme{
+  background-color: #1a1a1a;
+  color: #f0f2f5;
+}
+
+.app-container.dark-theme .task{
+  background-color: #2d2d2d;
+  color: #ffffff;
+  border-color: #444444;
+}
+
+.app-container.dark-theme inpurt{
+  background-color: #3a3a3a;
+  color: #ffffff;
+  border-color: #555555;
+}
+
+.app-container.dark-theme button{
+  background-color: #3a3a3a;
+  color: #ffffff;
+  border-color: #555555;
+}
+
+.app-container.dark-theme h2{
+  background-color: #3a3a3a;
+  color: #ffffff;
+  border-color: #555555;
+}
+
+.app-container.dark-theme h3{
+  background-color: #3a3a3a;
+  color: #ffffff;
+  border-color: #555555;
+}
+
+.app-container.dark-theme h4{
+  background-color: #3a3a3a;
+  color: #ffffff;
+  border-color: #555555;
+}
+
 .App {
   text-align: center;
 }
@@ -50,6 +106,20 @@ h2,h3,h4{
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.btn-secondary{
+  background-color: e4e6eb;
+  color: 4b4f56;
+}
+
+.btn-secondary:hover{
+  background-color: #d8dadf;
+}
+
+.btn-container{
+  display: flex;
+  gap: 10px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

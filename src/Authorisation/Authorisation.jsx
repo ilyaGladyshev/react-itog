@@ -149,7 +149,7 @@ const Authorisation = ({onLoginSuccess}) => {
 
 	return (
 
-		<div className="authorisation-container">
+		<div>
 			<h3>Авторизация</h3>
 			{step === 0 && (
 				<form className="autorization-form" onSubmit = {handleCheckLogin} 
@@ -175,8 +175,10 @@ const Authorisation = ({onLoginSuccess}) => {
 					<LessInput propsName="lastname" placeholder="Ваше отчество" type="text" onChangeProps={changeMiddleName} />				
 					<FullInput type='date' propsName="dateBirth" onChangeProps={changeDate}/>
 					<FullInput type='text-area' propsName="newPassword" placeholder="Пароль" onChangeProps={changeNewPassword} />						
-					<button type="submit">Зарегистрировать нового пользователя</button>
-					<button type="reset">Отмена</button>
+					<div className="btn-container">
+						<button type="submit">Зарегистрировать нового пользователя</button>
+						<button type="reset">Отмена</button>
+					</div>
 				</form>
 			)}		
 			{step === 3 && (
