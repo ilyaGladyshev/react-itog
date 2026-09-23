@@ -9,6 +9,7 @@ import './Authorisation.css';
 const Authorisation = ({onLoginSuccess}) => {
 	const [step, setStep] = useState(0);
 	const [userList, setUserList] = useState([]);
+	const [error, setError] = useState('');
 	const [loadind, setLoading] = useState(false);
 	const [login, setLogin] = useState('');
 	const [password, setPassword] = useState('');	
@@ -49,9 +50,13 @@ const Authorisation = ({onLoginSuccess}) => {
 					body: JSON.stringify({login: selectedLogin, password: password})
 				});
 				const data = await response.json();
-				if (data.status === 'exists') {
-					alert(`С возвращением, ${data.user.firstName}!`);
-					onLoginSuccess(data.user);
+				if (data.response.status === 'exists') {
+					alert(`С возвращением, ${data.response.firstName}!`);
+					onLoginSuccess(data.response);
+				} else if (data.response.status === 'wrong_password'){
+					setError(data.response.error);
+				} else if (data.response.status === 'not_found'){
+					setStep(1);
 				}
 			} catch (error) {
 				alert("Ошибка сервера!");
@@ -151,6 +156,10 @@ const Authorisation = ({onLoginSuccess}) => {
 
 		<div>
 			<h3>Авторизация</h3>
+			{error && (
+				<div className="error">{error}</div>
+			)
+			}
 			{step === 0 && (
 				<form className="autorization-form" onSubmit = {handleCheckLogin} 
 				onReset = {(e) => {

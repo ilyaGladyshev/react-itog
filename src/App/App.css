@@ -6,7 +6,7 @@ body{
     padding: 0;
 }
 
-input[type='text'], select, textarea{
+input[type='text'], select, textarea, input{
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -40,7 +40,12 @@ h2,h3,h4{
   align-items: center;
   justify-content: center;
   margin-top: 0;
+  background-color: lightcyan;
   color: #1a1a1a;
+}
+
+p, strong{
+  background-color: lightcyan;  
 }
 
 .theme-container{
@@ -69,7 +74,13 @@ h2,h3,h4{
   border-color: #444444;
 }
 
-.app-container.dark-theme inpurt{
+.app-container.dark-theme input{
+  background-color: #3a3a3a;
+  color: #ffffff;
+  border-color: #555555;
+}
+
+.app-container.dark-theme select{
   background-color: #3a3a3a;
   color: #ffffff;
   border-color: #555555;

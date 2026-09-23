@@ -22,8 +22,10 @@
 - JSON-файлы в качестве хранилища
 - bcryptjs (хеширование паролей)
 
+![Окно авторизации](/img/Authorization.jpg)
+![Список задач](/img/TaskList.jpg)
+![Темная тема](/img/DarkTheme.jpg)
 ## Запуск проекта
-
 1. Клонируй репозиторий:
 ```bash
 git clone https://github.com/ilyaGladyshev/react-itog.git

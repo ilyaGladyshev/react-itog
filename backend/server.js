@@ -1,6 +1,6 @@
 import http from 'http';
 import { URL } from 'url';
-import { findUserBylogin, createUser, readUsers,
+import { findUserBylogin, findUserByloginOnly, createUser, readUsers,
     readTasks, writeTasks, completeTaskById, getTasksByAuthor,
     createTask, deleteTaskById, exportTasks
  } from './jsonMoker.js';
@@ -33,21 +33,22 @@ const server = http.createServer(async (req, res) =>{
             const { login, password } = await getRequestBody(req);
             if (!login){
                 res.writeHead(400, jsonHeader);
-                return res.end(JSON.stringify({error: "Логин не указан"}));
+                return res.end(JSON.stringify({response: {status: 'not_found', error: "Логин не указан"}}));
             }
             if (!password){
                 res.writeHead(400, jsonHeader);
-                return res.end(JSON.stringify({error: "Пароль не указан"}));
+                return res.end(JSON.stringify({response: {status: 'wrong_password', error: "Пароль не указан"}}));
             }
-            const user = await findUserBylogin(login, password);
+            const response = await findUserBylogin(login, password);
             res.writeHead(200, jsonHeader);            
-            if (user){
+            console.log(response.status);
+            if (response.status === 'exists'){
+                console.log("2");
                 return res.end(JSON.stringify({
-                    status: 'exists',
-                    user
+                    response
                 }));
             } else {
-                return res.end(JSON.stringify({status: 'not_found',}));
+                return res.end(JSON.stringify({response}));
             }
         } 
         else if (req.method === 'POST' && pathname === '/api/register'){
@@ -56,7 +57,7 @@ const server = http.createServer(async (req, res) =>{
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Заполнены не все обязательные поля"}));
             }
-            const existingUser = await findUserBylogin(login, password); 
+            const existingUser = await findUserByloginOnly(login); 
             if (existingUser){
                 res.writeHead(409, jsonHeader);
                 return res.end(JSON.stringify({error: "Этот логин уже занят"}));

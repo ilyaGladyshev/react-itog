@@ -9,3 +9,12 @@ input{
     justify-content: center;
     gap: 10px;
 }
+.error{
+    color: #721c24;
+    background: #f8d7da;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    border: 1px, solid, #f5c6cb;
+}

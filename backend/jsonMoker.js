@@ -92,13 +92,25 @@ export async function findUserBylogin(login, password){
     const user = users[lowerLogin];
     if (user){
         const currentHash = user.passwordHash;
-        console.log(currentHash);
         const isMatch = await bcryptjs.compare(password, currentHash);
-        console.log(isMatch);
         if (isMatch) {
-            const {passwordHash, ...dataForReturn} = user;
-            return { login: lowerLogin, ...dataForReturn};
+            const {passwordHash, ...dataForReturn} = user;     
+            return {status: 'exists', login: lowerLogin, ...dataForReturn};
+        } else{
+            return {status: 'wrong_password', error: 'Неверный пароль'};
         }
+    }    
+    return {response: {status: 'not_found', error: 'Логин не найден'}};
+}
+
+export async function findUserByloginOnly(login){
+    if (!login) return null;
+    const users = await readUsers();
+    const lowerLogin = login.toString().toLowerCase();
+    const user = users[lowerLogin];
+    if (user){
+        const {passwordHash, ...dataForReturn} = user;
+        return { login: lowerLogin, ...dataForReturn};
     }    
     return null;
 }
@@ -114,7 +126,8 @@ export async function createUser(login, firstName, lastName, middleName, dateBir
             passwordHash: await hashPassword(password)
 		};
 		await writeUsers(users);
-        return {login: lowerLogin, ...users[lowerLogin]};		
+        const {passwordHash, ...dataForReturn} = users[lowerLogin];
+        return { login: lowerLogin, ...dataForReturn};	
 }
 
 function checkPriority(text){
