@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path"; 
 import { fileURLToPath } from "url";
 import bcryptjs from "bcryptjs";
+import { generateToken } from './jwt.js';
 
 const _dirname = path.dirname(fileURLToPath(import.meta.url))
 const USERS_FILE_PATH = path.join(_dirname ,"users.json");
@@ -95,7 +96,8 @@ export async function findUserBylogin(login, password){
         const isMatch = await bcryptjs.compare(password, currentHash);
         if (isMatch) {
             const {passwordHash, ...dataForReturn} = user;     
-            return {status: 'exists', login: lowerLogin, ...dataForReturn};
+            const token = generateToken({ id: user.id, login: lowerLogin})
+            return {status: 'exists', login: lowerLogin, token: token, ...dataForReturn};
         } else{
             return {status: 'wrong_password', error: 'Неверный пароль'};
         }

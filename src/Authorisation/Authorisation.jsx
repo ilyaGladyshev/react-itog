@@ -10,7 +10,6 @@ const Authorisation = ({onLoginSuccess}) => {
 	const [step, setStep] = useState(0);
 	const [userList, setUserList] = useState([]);
 	const [error, setError] = useState('');
-	const [loadind, setLoading] = useState(false);
 	const [login, setLogin] = useState('');
 	const [password, setPassword] = useState('');	
 	const [selectedLogin, setSelectedLogin] = useState('');
@@ -20,7 +19,7 @@ const Authorisation = ({onLoginSuccess}) => {
 		async function fetchUsers() {
 			try {
 				setSelectedLogin('new_account');
-				const response = await fetch('/api/users');
+				const response = await fetch('/api/auth/users');
 				const logins = await response.json();
 				setUserList(logins);
 				/*if (logins.length > 0){
@@ -36,21 +35,30 @@ const Authorisation = ({onLoginSuccess}) => {
 	}, []);
 
 	const onResetAuthorisation = () => {
+		localStorage.removeItem('token');
 		setStep(3);
 	}
 
 	const handleCheckLogin = async (e) => {
 		e.preventDefault();
 		if (selectedLogin !== 'new_account'){
-			setLoading(true);
 			try {
-				const response = await fetch('/api/check-user', {
+				const response = await fetch('/api/auth/check-user', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json'},
 					body: JSON.stringify({login: selectedLogin, password: password})
 				});
 				const data = await response.json();
-				if (data.response.status === 'exists') {
+				if (data.response.status === 'exists' && data.response.token) {
+					try {
+						localStorage.setItem('token', data.response.token);						
+					} catch (error) {
+						if (error.name === 'QuotaExceedError'){
+							console.warn('Локальное хранилище переполнено! Производим очистку...');
+							localStorage.clear();
+							localStorage.setItem('token', data.response.token);	
+						}	
+					}
 					alert(`С возвращением, ${data.response.firstName}!`);
 					onLoginSuccess(data.response);
 				} else if (data.response.status === 'wrong_password'){
@@ -60,9 +68,7 @@ const Authorisation = ({onLoginSuccess}) => {
 				}
 			} catch (error) {
 				alert("Ошибка сервера!");
-			} finally{
-				setLoading(false);
-			}
+			} 
 		}
 		else{
 			setStep(1);
@@ -121,9 +127,8 @@ const Authorisation = ({onLoginSuccess}) => {
 		} else if (fullName.password === ""){
 			console.log("Введите пароль!");			
 		}else{
-			setLoading(true);
 			try {
-				const response = await fetch('/api/register', {
+				const response = await fetch('/api/auth/register', {
 					method: 'POST',
 					headers: {'Content-Type': '/application/json'},
 					body: JSON.stringify({
@@ -142,8 +147,6 @@ const Authorisation = ({onLoginSuccess}) => {
 				}	
 			} catch (error) {
 				console.error("Ошибка сети", error);	
-			} finally{
-				setLoading(false);
 			}
 		}
 	}
@@ -173,10 +176,10 @@ const Authorisation = ({onLoginSuccess}) => {
 				</form>
 			)}
 			{step === 1 && (
-				<form classname="autorization-form" onSubmit = {writeNewUser} 
+				<form className="autorization-form" onSubmit = {writeNewUser} 
 				 onReset = {(e) => {
 						e.preventDefault();
-						{setStep(0)}
+						setStep(0);
 					}}>
 					<LessInput propsName="login" placeholder="Логин" type="text" onChangeProps={changeLogin} />						
 					<LessInput propsName="name" placeholder="Ваше имя" type="text" onChangeProps={changeFirstName} />

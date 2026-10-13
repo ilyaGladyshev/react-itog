@@ -1,5 +1,6 @@
 import http from 'http';
 import { URL } from 'url';
+import { verifyToken } from './jwt.js';
 import { findUserBylogin, findUserByloginOnly, createUser, readUsers,
     readTasks, writeTasks, completeTaskById, getTasksByAuthor,
     createTask, deleteTaskById, exportTasks
@@ -29,7 +30,7 @@ const server = http.createServer(async (req, res) =>{
     const pathname = url.pathname;
     try {
     
-        if (req.method === 'POST' && pathname === '/api/check-user')  {
+        if (req.method === 'POST' && pathname === '/api/auth/check-user')  {
             const { login, password } = await getRequestBody(req);
             if (!login){
                 res.writeHead(400, jsonHeader);
@@ -41,17 +42,35 @@ const server = http.createServer(async (req, res) =>{
             }
             const response = await findUserBylogin(login, password);
             res.writeHead(200, jsonHeader);            
-            console.log(response.status);
             if (response.status === 'exists'){
-                console.log("2");
                 return res.end(JSON.stringify({
                     response
                 }));
             } else {
                 return res.end(JSON.stringify({response}));
             }
-        } 
-        else if (req.method === 'POST' && pathname === '/api/register'){
+        } else if (req.method === 'GET' && pathname === '/api/auth/users')  {
+            const users = await readUsers();
+            const logins = Object.keys(users);
+            res.writeHead(200, jsonHeader);
+            return res.end(JSON.stringify(logins));
+        } else if (req.method === 'GET' && pathname === '/api/auth/me')  {
+            const authHeader = req.headers['authorisation'];
+            const token = authHeader && authHeader.split(' ')[1];
+            const decodedUser = verifyToken(token);
+            if (!decodedUser){
+                res.writeHead(400, jsonHeader);
+                return res.end(JSON.stringify({ error: "Токен невалиден или просрочен"}));
+            }           
+            const user = await findUserByloginOnly(decodedUser.login);
+            if (!user){
+                res.writeHead(404, jsonHeader);
+                return res.end(JSON.stringify({ error: "Пользователь не найден"}));
+            }
+            res.writeHead(200, jsonHeader);
+            return res.end(JSON.stringify({status: 'success', user}));
+        }  
+        else if (req.method === 'POST' && pathname === '/api/auth/register'){
             const { login, firstName, lastName, middleName, dateBirth, password} = await getRequestBody(req);
             if (!login || !firstName || !lastName || !dateBirth){
                 res.writeHead(400, jsonHeader);
@@ -91,7 +110,6 @@ const server = http.createServer(async (req, res) =>{
             }
             const userTasks = await getTasksByAuthor(author);
             const csv = await exportTasks(userTasks);
-            console.log(csv);
             res.writeHead(200, {
                 'Content-Type': 'text/csv; charset=utf-8',
                 'Content-Disposition': 'attachment; filename="tasks_report.csv"' 
@@ -134,19 +152,15 @@ const server = http.createServer(async (req, res) =>{
             }
   
         }               
-        else if (req.method === 'GET' && pathname === '/api/users')  {
-            const users = await readUsers();
-            const logins = Object.keys(users);
-            res.writeHead(200, jsonHeader);
-            return res.end(JSON.stringify(logins));
-        }
         else if (req.method === 'GET' && pathname === '/api/tasks')  {
-            const author = url.searchParams.get('author');
-            if (!author){
+            const authHeader = req.headers['authorisation'];
+            const token = authHeader && authHeader.split(' ')[1];
+            const decodedUser = verifyToken(token);
+            if (!decodedUser){
                 res.writeHead(400, jsonHeader);
-                return res.end(JSON.stringify({ error: "Не указан автор задач"}));
-            }
-            const userTasks = await getTasksByAuthor(author);
+                return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
+            }           
+            const userTasks = await getTasksByAuthor(decodedUser.login);
             res.writeHead(200, jsonHeader);
             return res.end(JSON.stringify(userTasks));
         }       

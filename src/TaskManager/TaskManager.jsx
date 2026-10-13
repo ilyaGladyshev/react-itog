@@ -20,7 +20,13 @@ const TaskManager = ({user}) => {
 	})
 	const loadTasks = async () => {
 		try {
-			const response = await fetch(`/api/tasks?author=${user.login}`)
+			const token = localStorage.getItem('token');
+			const response = await fetch(`/api/tasks`,{
+				method: 'GET',
+				headers: {
+					'Authorisation': `Brearer ${token}`
+				}
+			})
 			const data = await response.json();
 			setTaskList(data);
 		} catch (error) {
@@ -87,7 +93,8 @@ const TaskManager = ({user}) => {
 				<button onClick={() => setAddTaskIsOpened(!addTaskIsOpened)}>
 					Добавить задачу
 				</button>
-				<button onClick={() => window.open(`http://localhost:5000/api/tasks/export?author=${user.login}`, '_blank')}>
+				<button className = "btn-export" 
+					onClick={() => window.open(`http://localhost:5000/api/tasks/export?author=${user.login}`, '_blank')}>
 					Выгрузить список задач
 				</button>	
 			</div>
