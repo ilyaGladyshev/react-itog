@@ -24,7 +24,7 @@ export default function RouterMenu(){
 				const response = await fetch('/api/auth/me', {
 					method: 'GET',
 					headers: {
-						'Authorisation': `Brearer ${token}`
+						'Authorization': `Brearer ${token}`
 					}
 				});
 				const data = await response.json();

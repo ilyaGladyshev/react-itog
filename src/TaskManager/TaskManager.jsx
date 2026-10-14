@@ -24,7 +24,7 @@ const TaskManager = ({user}) => {
 			const response = await fetch(`/api/tasks`,{
 				method: 'GET',
 				headers: {
-					'Authorisation': `Brearer ${token}`
+					'Authorization': `Brearer ${token}`
 				}
 			})
 			const data = await response.json();

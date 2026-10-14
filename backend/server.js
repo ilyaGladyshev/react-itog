@@ -1,6 +1,7 @@
 import http from 'http';
 import { URL } from 'url';
 import { verifyToken } from './jwt.js';
+import dotenv from 'dotenv';
 import { findUserBylogin, findUserByloginOnly, createUser, readUsers,
     readTasks, writeTasks, completeTaskById, getTasksByAuthor,
     createTask, deleteTaskById, exportTasks
@@ -26,6 +27,7 @@ function getRequestBody(req){
 
 const server = http.createServer(async (req, res) =>{
     const jsonHeader = { 'Content-Type': 'application/json; charset=utf-8'};
+    dotenv.config();
     const url = new URL(req.url, `http://${req.headers.host}`);
     const pathname = url.pathname;
     try {
@@ -55,7 +57,7 @@ const server = http.createServer(async (req, res) =>{
             res.writeHead(200, jsonHeader);
             return res.end(JSON.stringify(logins));
         } else if (req.method === 'GET' && pathname === '/api/auth/me')  {
-            const authHeader = req.headers['authorisation'];
+            const authHeader = req.headers['authorization'];
             const token = authHeader && authHeader.split(' ')[1];
             const decodedUser = verifyToken(token);
             if (!decodedUser){
@@ -153,7 +155,7 @@ const server = http.createServer(async (req, res) =>{
   
         }               
         else if (req.method === 'GET' && pathname === '/api/tasks')  {
-            const authHeader = req.headers['authorisation'];
+            const authHeader = req.headers['authorization'];
             const token = authHeader && authHeader.split(' ')[1];
             const decodedUser = verifyToken(token);
             if (!decodedUser){
