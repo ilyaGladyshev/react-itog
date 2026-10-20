@@ -34,12 +34,15 @@ const TaskManager = ({user}) => {
 		}
 	}
 	const onAddTask = async (title, description, priority) =>{
-		const login = user.login;
+		const token = localStorage.getItem('token');
 		try {
 			await fetch("/api/tasks", {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json'},
-				body: JSON.stringify({author: user.login, title, description})
+				headers: { 
+					'Content-Type': 'application/json',
+					'Authorization': `Brearer ${token}`
+				},
+				body: JSON.stringify({ title, description})
 			});
 			loadTasks();
 		} catch (error) {
@@ -62,10 +65,15 @@ const TaskManager = ({user}) => {
 
 	const onCompleteTask = async (id) => {
 		try {
+			const token = localStorage.getItem('token');
 			await fetch("/api/tasks/complete", {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json'},
+				headers: { 
+					'Content-Type': 'application/json',
+					'Authorization': `Brearer ${token}`
+				},
 				body: JSON.stringify({id})
+				
 			});
 			loadTasks();
 		} catch (error) {
@@ -75,15 +83,42 @@ const TaskManager = ({user}) => {
 
 	const onDeleteTask = async (id) => {
 		try {
+			const token = localStorage.getItem('token');			
 			await fetch("/api/tasks/delete", {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json'},
+				headers: { 
+					'Content-Type': 'application/json',
+					'Authorization': `Brearer ${token}`
+				},
 				body: JSON.stringify({id})
 			});
 			loadTasks();
 		} catch (error) {
 			alert("Ошибка при изменении статуса");	
 		}		
+	}
+
+	const handleExport = async () => {
+		const token = localStorage.getItem('token');		
+		const response = await fetch("/api/tasks/export", {
+			method: 'GET',
+			headers: {
+					'Authorization': `Brearer ${token}`				
+			}
+		});
+		if (!response.ok){
+			console.log("Не удалось выгрузить файл");
+			return;
+		}
+		const blob = await response.blob();
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'task_report.csv';
+		document.body.append(a);
+		a.click();
+		a.remove();
+		window.URL.revokeObjectURL(url);
 	}
 
 	return (
@@ -94,7 +129,7 @@ const TaskManager = ({user}) => {
 					Добавить задачу
 				</button>
 				<button className = "btn-export" 
-					onClick={() => window.open(`http://localhost:5000/api/tasks/export?author=${user.login}`, '_blank')}>
+					onClick={handleExport}>
 					Выгрузить список задач
 				</button>	
 			</div>

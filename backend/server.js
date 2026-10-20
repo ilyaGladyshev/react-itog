@@ -8,6 +8,8 @@ import { findUserBylogin, findUserByloginOnly, createUser, readUsers,
  } from './jsonMoker.js';
 import { Console } from 'console';
 
+dotenv.config();
+
 function getRequestBody(req){
     return new Promise ((resolve, reject) => {
         let body = '';
@@ -27,7 +29,6 @@ function getRequestBody(req){
 
 const server = http.createServer(async (req, res) =>{
     const jsonHeader = { 'Content-Type': 'application/json; charset=utf-8'};
-    dotenv.config();
     const url = new URL(req.url, `http://${req.headers.host}`);
     const pathname = url.pathname;
     try {
@@ -92,25 +93,34 @@ const server = http.createServer(async (req, res) =>{
             }));      
         }
         else if (req.method === 'POST' && pathname === '/api/tasks'){
-            const { author, title, description } = await getRequestBody(req);
-            
-            if (!title || !author){
+            const { title, description } = await getRequestBody(req);
+            const authHeader = req.headers['authorization'];
+            const token = authHeader && authHeader.split(' ')[1];
+            const decodedUser = verifyToken(token);
+            if (!decodedUser){
+                res.writeHead(400, jsonHeader);
+                return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
+            }              
+            if (!title){
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Заполнены не все обязательные поля"}));
             }
 
-            const newTask = await createTask(title, description, author);
+            const newTask = await createTask(title, description, decodedUser.login);
             res.writeHead(201, jsonHeader);
             return res.end(JSON.stringify(newTask));      
         }
         
         else if (req.method === 'GET' && pathname === '/api/tasks/export'){
-            const author = url.searchParams.get('author');        
-            if (!author){
+            
+            const authHeader = req.headers['authorization'];
+            const token = authHeader && authHeader.split(' ')[1];
+            const decodedUser = verifyToken(token);
+            if (!decodedUser){
                 res.writeHead(400, jsonHeader);
-                return res.end(JSON.stringify({error: "Не удалось определить автора"}));
-            }
-            const userTasks = await getTasksByAuthor(author);
+                return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
+            }     
+            const userTasks = await getTasksByAuthor(decodedUser.login);
             const csv = await exportTasks(userTasks);
             res.writeHead(200, {
                 'Content-Type': 'text/csv; charset=utf-8',
@@ -125,6 +135,14 @@ const server = http.createServer(async (req, res) =>{
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Не указан ID задачи"}));
             }
+
+            const authHeader = req.headers['authorization'];
+            const token = authHeader && authHeader.split(' ')[1];
+            const decodedUser = verifyToken(token);
+            if (!decodedUser){
+                res.writeHead(400, jsonHeader);
+                return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
+            }  
 
             const success = await completeTaskById(id);
             if (success){
@@ -144,6 +162,14 @@ const server = http.createServer(async (req, res) =>{
                 return res.end(JSON.stringify({error: "Не указан ID задачи"}));
             }
 
+            const authHeader = req.headers['authorization'];
+            const token = authHeader && authHeader.split(' ')[1];
+            const decodedUser = verifyToken(token);
+            if (!decodedUser){
+                res.writeHead(400, jsonHeader);
+                return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
+            }  
+            
             const success = await deleteTaskById(id);
             if (success){
                 res.writeHead(201, jsonHeader);
