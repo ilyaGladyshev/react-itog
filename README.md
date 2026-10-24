@@ -30,8 +30,8 @@
 
 1. Клонируйте:
 ```bash
-   git clone https://github.com/ilyaGladyshev/react-itog.git
-   cd react-itog
+git clone https://github.com/ilyaGladyshev/react-itog.git
+cd react-itog
 
 Установите зависимости:
 
@@ -40,6 +40,7 @@ npm install
 cd backend
 npm install
 cd ..
+```
 Запустите:
 
 Бэкенд (в отдельном терминале):
@@ -48,10 +49,11 @@ cd backend
 node server.js
 Сервер: http://localhost:5000
 Фронтенд:
-bash
+```
+```bash
 npm run dev
 Приложение: http://localhost:3000
-
+```
 ---
 
 API
