@@ -11,7 +11,7 @@
 ---
 
 ## Стек
-**Frontend:** React 19, React Router 7, [ React App ] 
+**Frontend:** React 19, React Router 7, [ Create React App ] 
 **Backend:** Node.js, чистый `http`, JSON-файлы  
 **Безопасность и окружение:** bcryptjs, JWT, dotenv
 
@@ -32,8 +32,9 @@
 ```bash
 git clone https://github.com/ilyaGladyshev/react-itog.git
 cd react-itog
+```
 
-Установите зависимости:
+2. Установите зависимости:
 
 ```bash
 npm install
@@ -41,19 +42,20 @@ cd backend
 npm install
 cd ..
 ```
-Запустите:
+3. Запустите:
 
 Бэкенд (в отдельном терминале):
 ```bash
 cd backend
 node server.js
+```
 Сервер: http://localhost:5000
 Фронтенд:
-```
 ```bash
 npm run dev
-Приложение: http://localhost:3000
 ```
+Приложение: http://localhost:3000
+
 ---
 
 API
@@ -64,8 +66,8 @@ API
 | POST | `/api/auth/login` | Вход, возвращает токен/сессию |
 | GET | `/api/tasks` | Список задач (с фильтрацией) |
 | POST | `/api/tasks` | Создать задачу |
-| PUT | `/api/tasks/:id` | Обновить задачу |
-| DELETE | `/api/tasks/:id` | Удалить задачу |
+| POST | `/api/tasks/complete` | Завершить задачу |
+| POST | `/api/tasks/delete` | Удалить задачу |
 | GET | `/api/tasks/export` | Экспорт задач в CSV |
 
 ---
