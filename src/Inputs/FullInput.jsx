@@ -24,7 +24,7 @@ const FullInput = ({type, placeholder, propsName, onChangeProps}) => {
 			return(
 				<input name={propsName} type='password' 
 				onChange={onChangeProps}
-				calssName={'valid'} />
+				className={'valid'} />
 			);		
 		case 'text-area':
 			return(
@@ -32,7 +32,7 @@ const FullInput = ({type, placeholder, propsName, onChangeProps}) => {
 					   type='textarea' 
 					   placeholder={placeholder}
 					   onChange={onChangeProps} 
-					   calssName='textarea' />
+					   className='textarea' />
 			);		
 		}
 	

@@ -143,7 +143,16 @@ const Authorisation = ({onLoginSuccess}) => {
 				const data = await response.json();
 				if (response.ok && data.success){
 					alert('Регистрация успешна!');
-					onLoginSuccess(data.user);
+					try {
+						localStorage.setItem('token', data.response.token);						
+					} catch (error) {
+						if (error.name === 'QuotaExceedError'){
+							console.warn('Локальное хранилище переполнено! Производим очистку...');
+							localStorage.clear();
+							localStorage.setItem('token', data.response.token);	
+						}	
+					}
+					onLoginSuccess(data.response);
 				}	
 			} catch (error) {
 				console.error("Ошибка сети", error);	
@@ -176,7 +185,7 @@ const Authorisation = ({onLoginSuccess}) => {
 				</form>
 			)}
 			{step === 1 && (
-				<form className="autorization-form" onSubmit = {writeNewUser} 
+				<form className="enter-new-user-form" onSubmit = {writeNewUser} 
 				 onReset = {(e) => {
 						e.preventDefault();
 						setStep(0);

@@ -9,6 +9,12 @@ input{
     justify-content: center;
     gap: 10px;
 }
+
+.enter-new-user-form{
+    color: lightcyan;
+    gap: 10px;
+}
+
 .error{
     color: #721c24;
     background: #f8d7da;

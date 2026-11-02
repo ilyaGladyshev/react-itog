@@ -2,11 +2,9 @@ import http from 'http';
 import { URL } from 'url';
 import { verifyToken } from './jwt.js';
 import dotenv from 'dotenv';
-import { findUserBylogin, findUserByloginOnly, createUser, readUsers,
-    readTasks, writeTasks, completeTaskById, getTasksByAuthor,
-    createTask, deleteTaskById, exportTasks
- } from './jsonMoker.js';
-import { Console } from 'console';
+import { findUserBylogin, findUserByloginOnly, createUser, readUsers, readLogins } from './dbUsers.js';
+import { readTasks, completeTaskById, getTasksByAuthor,
+    createTask, deleteTaskById, exportTasks} from './dbTasks.js';
 
 dotenv.config();
 
@@ -53,10 +51,9 @@ const server = http.createServer(async (req, res) =>{
                 return res.end(JSON.stringify({response}));
             }
         } else if (req.method === 'GET' && pathname === '/api/auth/users')  {
-            const users = await readUsers();
-            const logins = Object.keys(users);
+            const users = await readLogins();
             res.writeHead(200, jsonHeader);
-            return res.end(JSON.stringify(logins));
+            return res.end(JSON.stringify(users));
         } else if (req.method === 'GET' && pathname === '/api/auth/me')  {
             const authHeader = req.headers['authorization'];
             const token = authHeader && authHeader.split(' ')[1];
@@ -89,7 +86,7 @@ const server = http.createServer(async (req, res) =>{
             res.writeHead(201, jsonHeader);
             return res.end(JSON.stringify({
                 success: true,
-                user: newUser
+                response: newUser
             }));      
         }
         else if (req.method === 'POST' && pathname === '/api/tasks'){
@@ -106,7 +103,7 @@ const server = http.createServer(async (req, res) =>{
                 return res.end(JSON.stringify({error: "Заполнены не все обязательные поля"}));
             }
 
-            const newTask = await createTask(title, description, decodedUser.login);
+            const newTask = await createTask(title, description, decodedUser.id);
             res.writeHead(201, jsonHeader);
             return res.end(JSON.stringify(newTask));      
         }
@@ -120,7 +117,7 @@ const server = http.createServer(async (req, res) =>{
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
             }     
-            const userTasks = await getTasksByAuthor(decodedUser.login);
+            const userTasks = await getTasksByAuthor(decodedUser.id);
             const csv = await exportTasks(userTasks);
             res.writeHead(200, {
                 'Content-Type': 'text/csv; charset=utf-8',
@@ -188,7 +185,7 @@ const server = http.createServer(async (req, res) =>{
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
             }           
-            const userTasks = await getTasksByAuthor(decodedUser.login);
+            const userTasks = await getTasksByAuthor(decodedUser.id);
             res.writeHead(200, jsonHeader);
             return res.end(JSON.stringify(userTasks));
         }       
