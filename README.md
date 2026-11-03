@@ -1,21 +1,20 @@
 # 📋 React Task Manager (Итоговый проект)
 
-Учебный менеджер задач с авторизацией и JSON-хранилищем.
+Учебный менеджер задач с авторизацией и хранением данных в MySQL.
 
 ## Возможности
 - Регистрация и вход (bcrypt + JWT)
 - CRUD задач (создание, просмотр, обновление, удаление)
 - Фильтрация по статусу и автору
 - Экспорт в CSV
+- Хранение данных в MySQL.
 
 ---
 
 ## Стек
 **Frontend:** React 19, React Router 7, [ Create React App ] 
-**Backend:** Node.js, чистый `http`, JSON-файлы  
+**Backend:** Node.js, чистый `http`, MySQL  
 **Безопасность и окружение:** bcryptjs, JWT, dotenv
-
-> ⚠️ Проект учебный: данные в JSON, не для продакшена.
 
 ---
 
@@ -28,13 +27,13 @@
 
 ## Запуск
 
-1. Клонируйте:
+### 1. Клонируйте репозиторий:
 ```bash
 git clone https://github.com/ilyaGladyshev/react-itog.git
 cd react-itog
 ```
 
-2. Установите зависимости:
+### 2. Установите зависимости:
 
 ```bash
 npm install
@@ -42,7 +41,19 @@ cd backend
 npm install
 cd ..
 ```
-3. Запустите:
+
+### 3. Настройка базы данных
+Создайте базу данных в MySQL:
+```sql
+CREATE DATABASE task_manager CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE task_manager;
+```
+Примените схему (создание таблиц):
+```bash
+mysql -u root -p task_manager < react-itog/backend/db/schema.sql
+```
+
+### 4. Запустите:
 
 Бэкенд (в отдельном терминале):
 ```bash
@@ -74,9 +85,13 @@ API
 
 Переменные окружения
 В backend/.env:
-env
-JWT_SECRET=твой_секретный_ключ
-PORT=5000
+```env
+JWT_SECRET=ваш_секретный_ключ_здесь
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=ваш_пароль_от_mysql
+DB_NAME=task_manager
+```
 ---
 
 Автор: Илья Гладышев (ilyaGladyshev)
