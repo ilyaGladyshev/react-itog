@@ -95,7 +95,7 @@ export async function completeTaskById(id) {
 
 export async function deleteTaskById(id) {
     try {
-        const query = "DELETE tasks WHERE id = :id";        
+        const query = "DELETE FROM tasks WHERE id = :id";        
         const [rows, fields] = await pool.execute(query, {id: id});
         if (rows) return true;
             else return false;    

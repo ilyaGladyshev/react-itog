@@ -30,8 +30,8 @@ export async function readLogins() {
     try {
         const ret = [];
         const [result, fields] = await pool.query("SELECT login from users"); 
-        result.forEach((login) => ret.push(login));
-        return ret;
+        const logins = result.map(row => row.login);
+        return logins;
     } catch (error) {
       console.error('readUsersFile error: ', error)
       if (error.code === 'ENOENT') return null;
@@ -48,7 +48,7 @@ export async function createUser(login, firstName, lastName, middleName, dateBir
         const [result] = await pool.execute(query,
             [lowerLogin, firstName, lastName, middleName, dateBirth, passwordHash]);  
         const token = generateToken({ id: result.insertId.toString(), login: login}); 
-        return {
+        const user = {
             id: result.insertId,
             login: login,
             firstName : firstName,
@@ -56,7 +56,8 @@ export async function createUser(login, firstName, lastName, middleName, dateBir
             middleName : middleName,
             dateBirth: dateBirth,
             token: token
-        };      
+        };  
+        return user;    
     } catch (error) {
       console.error('createUser error: ', error)
       if (error.code === 'ENOENT') return null;
@@ -71,9 +72,9 @@ export async function findUserBylogin(login, password){
             "lastName, passwordHash, dateBirth from users where login = :lowerLogin LIMIT 1",
             {lowerLogin: lowerLogin});
         if (!rows.length) return {status: 'not_found', error: 'Пользователь не найден'};
-        const {id, login, firstName, lastName, passwordHash, dateBirth} = rows[0];
-        if (user){
-            const currentHash = user.passwordHash;
+        const {id, firstName, lastName, passwordHash, dateBirth} = rows[0];
+        if (passwordHash){
+            const currentHash = passwordHash;
             if (currentHash){
                 const isMatch = await bcryptjs.compare(password, currentHash);
                 if (isMatch) { 

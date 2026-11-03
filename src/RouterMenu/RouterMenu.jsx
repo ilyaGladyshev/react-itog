@@ -9,6 +9,7 @@ export default function RouterMenu(){
 	const [theme, setTheme] = useState('light'); 
 	const [currentUser, setCurrentUser] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const REACT_APP_URL = process.env.REACT_APP_URL;
 	const toggleTheme = () => {
 		setTheme((prevTheme) => (prevTheme === 'light'? 'dark' : 'light'));
 	}
@@ -21,7 +22,7 @@ export default function RouterMenu(){
 				return;
 			}
 			try {
-				const response = await fetch('/api/auth/me', {
+				const response = await fetch(`${REACT_APP_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {
 						'Authorization': `Brearer ${token}`

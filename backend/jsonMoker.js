@@ -11,7 +11,6 @@ const TASKS_FILE_PATH = path.join(_dirname ,"tasks.json");
 async function hashPassword(password){
     if (!password) return '';
     return await bcryptjs.hash(password, 10);
-    //return crypto.createHash('sha256').update(password).digest('hex');
 }
 
 export async function readUsers() {
@@ -71,15 +70,6 @@ export async function writeTasks(tasksObject) {
         return false;    
     }
 }
-
-/*export async function checkUser(userObject){
-    try {
-        
-    } catch (error) {
-        console.log("Не удалось пройти авторизацию: " + error.message);
-        return false;          
-    }
-}*/
 
 export async function getTasksByAuthor(author) {
     const data = await readTasks();

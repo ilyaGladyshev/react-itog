@@ -3,7 +3,7 @@ import { URL } from 'url';
 import { verifyToken } from './jwt.js';
 import dotenv from 'dotenv';
 import { findUserBylogin, findUserByloginOnly, createUser, readUsers, readLogins } from './dbUsers.js';
-import { readTasks, completeTaskById, getTasksByAuthor,
+import { completeTaskById, getTasksByAuthor,
     createTask, deleteTaskById, exportTasks} from './dbTasks.js';
 
 dotenv.config();
@@ -29,8 +29,28 @@ const server = http.createServer(async (req, res) =>{
     const jsonHeader = { 'Content-Type': 'application/json; charset=utf-8'};
     const url = new URL(req.url, `http://${req.headers.host}`);
     const pathname = url.pathname;
-    try {
     
+    const origin = req.headers.origin || '';
+    
+    const allowedOrigins = [
+        'http://localhost:3000',          
+        'https://chat-ts-ten.vercel.app', 
+    ];
+
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } 
+    
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+        res.statusCode = 204;
+        res.end();
+        return;
+    }
+
+    try {
         if (req.method === 'POST' && pathname === '/api/auth/check-user')  {
             const { login, password } = await getRequestBody(req);
             if (!login){
@@ -43,13 +63,7 @@ const server = http.createServer(async (req, res) =>{
             }
             const response = await findUserBylogin(login, password);
             res.writeHead(200, jsonHeader);            
-            if (response.status === 'exists'){
-                return res.end(JSON.stringify({
-                    response
-                }));
-            } else {
-                return res.end(JSON.stringify({response}));
-            }
+            return res.end(JSON.stringify({response}));
         } else if (req.method === 'GET' && pathname === '/api/auth/users')  {
             const users = await readLogins();
             res.writeHead(200, jsonHeader);
@@ -61,7 +75,7 @@ const server = http.createServer(async (req, res) =>{
             if (!decodedUser){
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({ error: "Токен невалиден или просрочен"}));
-            }           
+            }        
             const user = await findUserByloginOnly(decodedUser.login);
             if (!user){
                 res.writeHead(404, jsonHeader);

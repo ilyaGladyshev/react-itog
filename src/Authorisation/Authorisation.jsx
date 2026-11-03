@@ -14,24 +14,31 @@ const Authorisation = ({onLoginSuccess}) => {
 	const [password, setPassword] = useState('');	
 	const [selectedLogin, setSelectedLogin] = useState('');
 	const [fullName, setFullName] =useState({firstName : '', lastName : '', middleName : '', dateBirth: '',password: ''})
-	
+    const REACT_APP_URL = process.env.REACT_APP_URL;
+
 	useEffect(() =>{
+		let isMounted = true;
+		
 		async function fetchUsers() {
+			if (!isMounted) return;
 			try {
 				setSelectedLogin('new_account');
-				const response = await fetch('/api/auth/users');
+				const response = await fetch(`${REACT_APP_URL}/api/auth/users`);
 				const logins = await response.json();
-				setUserList(logins);
-				/*if (logins.length > 0){
-					setSelectedLogin(logins[0]);
-				} else{
-					setSelectedLogin('new_account');
-				}*/ 				
+				if (isMounted) {
+					setUserList(logins);
+				}				
 			} catch (error) {
-				console.error('Не удалось загрузить пользователей', error);	
+				if (isMounted) {
+					console.error('Не удалось загрузить пользователей', error);
+				}
 			}
 		}
+
 		fetchUsers();
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 
 	const onResetAuthorisation = () => {
@@ -43,24 +50,24 @@ const Authorisation = ({onLoginSuccess}) => {
 		e.preventDefault();
 		if (selectedLogin !== 'new_account'){
 			try {
-				const response = await fetch('/api/auth/check-user', {
+				const response = await fetch(`${REACT_APP_URL}/api/auth/check-user`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json'},
 					body: JSON.stringify({login: selectedLogin, password: password})
 				});
 				const data = await response.json();
-				if (data.response.status === 'exists' && data.response.token) {
+				if (data.response.status === 'success' && data.response.user.token) {
 					try {
-						localStorage.setItem('token', data.response.token);						
+						localStorage.setItem('token', data.response.user.token);						
 					} catch (error) {
 						if (error.name === 'QuotaExceedError'){
 							console.warn('Локальное хранилище переполнено! Производим очистку...');
 							localStorage.clear();
-							localStorage.setItem('token', data.response.token);	
+							localStorage.setItem('token', data.response.user.token);	
 						}	
 					}
-					alert(`С возвращением, ${data.response.firstName}!`);
-					onLoginSuccess(data.response);
+					alert(`С возвращением, ${data.response.user.firstName}!`);
+					onLoginSuccess(data.response.user);
 				} else if (data.response.status === 'wrong_password'){
 					setError(data.response.error);
 				} else if (data.response.status === 'not_found'){
@@ -72,17 +79,6 @@ const Authorisation = ({onLoginSuccess}) => {
 		}
 		else{
 			setStep(1);
-			/*if (!login.trim()) return alert('Введите новый логин!');
-				const response = await fetch('/api/check-user', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json'},
-					body: JSON.stringify({login: selectedLogin})
-				});
-				const data = await response.json();
-				if (data.status === 'exists'){
-					return('Этот логин занят, введите новый логин!');
-				}
-				setStep(1);*/
 		}
 	}
 
@@ -128,7 +124,7 @@ const Authorisation = ({onLoginSuccess}) => {
 			console.log("Введите пароль!");			
 		}else{
 			try {
-				const response = await fetch('/api/auth/register', {
+				const response = await fetch(`${REACT_APP_URL}/api/auth/register`, {
 					method: 'POST',
 					headers: {'Content-Type': '/application/json'},
 					body: JSON.stringify({

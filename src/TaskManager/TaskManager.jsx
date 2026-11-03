@@ -6,7 +6,7 @@ const TaskManager = ({user}) => {
 	
 	const [addTaskIsOpened, setAddTaskIsOpened] = useState(false);
 	const [taskList, setTaskList] = useState([]);
-	const [task, setTask] = useState({});
+	const REACT_APP_URL = process.env.REACT_APP_URL;
 	const [hideCompleted, setHideCompleted] = useState(false);
 	const [onlyUrgent, setOnlyUrgent] = useState(false);
 	const onCloseAddTask = () => {
@@ -15,13 +15,13 @@ const TaskManager = ({user}) => {
 	}
 	const filteredTask = taskList.filter(t =>{
 		if (hideCompleted && t.status === "Выполнено") return false;
-		if (onlyUrgent && t.priority != 2) return false;
+		if (onlyUrgent && t.priority !== 2) return false;
 		return true;
 	})
 	const loadTasks = async () => {
 		try {
 			const token = localStorage.getItem('token');
-			const response = await fetch(`/api/tasks`,{
+			const response = await fetch(`${REACT_APP_URL}/api/tasks`,{
 				method: 'GET',
 				headers: {
 					'Authorization': `Brearer ${token}`
@@ -36,7 +36,7 @@ const TaskManager = ({user}) => {
 	const onAddTask = async (title, description, priority) =>{
 		const token = localStorage.getItem('token');
 		try {
-			await fetch("/api/tasks", {
+			await fetch(`${REACT_APP_URL}/api/tasks`, {
 				method: 'POST',
 				headers: { 
 					'Content-Type': 'application/json',
@@ -49,15 +49,6 @@ const TaskManager = ({user}) => {
 			alert("Не удалось сохранить задачу на сервере");	
 		}
 	}
-		/*(e) => {
-		const obj = Object.values(e).reduce((obj, field) => {
-					obj[field.name] = field.value;
-					return obj
-				}, {});
-		setTask(obj);
-		setTaskList([...taskList, obj]);
-	}*/
-	
 
 	useEffect(() => {
 		loadTasks();
@@ -66,7 +57,7 @@ const TaskManager = ({user}) => {
 	const onCompleteTask = async (id) => {
 		try {
 			const token = localStorage.getItem('token');
-			await fetch("/api/tasks/complete", {
+			await fetch(`${REACT_APP_URL}/api/tasks/complete`, {
 				method: 'POST',
 				headers: { 
 					'Content-Type': 'application/json',
@@ -84,7 +75,7 @@ const TaskManager = ({user}) => {
 	const onDeleteTask = async (id) => {
 		try {
 			const token = localStorage.getItem('token');			
-			await fetch("/api/tasks/delete", {
+			await fetch(`${REACT_APP_URL}/api/tasks/delete`, {
 				method: 'POST',
 				headers: { 
 					'Content-Type': 'application/json',
@@ -100,7 +91,7 @@ const TaskManager = ({user}) => {
 
 	const handleExport = async () => {
 		const token = localStorage.getItem('token');		
-		const response = await fetch("/api/tasks/export", {
+		const response = await fetch(`${REACT_APP_URL}/api/tasks/export`, {
 			method: 'GET',
 			headers: {
 					'Authorization': `Brearer ${token}`				
