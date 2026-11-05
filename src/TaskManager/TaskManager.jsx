@@ -33,6 +33,16 @@ const TaskManager = ({user}) => {
 			console.error("Ошибка загрузки задач", error);		
 		}
 	}
+	const onPriorityChange = (id, priority) => {
+		setTaskList(prevList => 
+			prevList.map(task => {
+				if (task.id === id) {
+					return { ...task, priority: priority };
+				}
+				return task;
+			}))
+	}
+
 	const onAddTask = async (title, description, priority) =>{
 		const token = localStorage.getItem('token');
 		try {
