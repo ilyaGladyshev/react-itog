@@ -28,7 +28,6 @@ export async function readUsers() {
 
 export async function readLogins() {
     try {
-        const ret = [];
         const [result, fields] = await pool.query("SELECT login from users"); 
         const logins = result.map(row => row.login);
         return logins;
@@ -78,7 +77,7 @@ export async function findUserBylogin(login, password){
             if (currentHash){
                 const isMatch = await bcryptjs.compare(password, currentHash);
                 if (isMatch) { 
-                    const token = generateToken({ id}); 
+                    const token = generateToken({ id, login: lowerLogin}); 
                     return {status: 'success', 
                         user: {id, token, firstName, lastName, login, dateBirth}}
                     };

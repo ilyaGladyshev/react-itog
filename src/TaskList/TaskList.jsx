@@ -1,6 +1,6 @@
 import "./TaskList.css"
 
-const TaskList = ({ tasks, onCompleteTask, onDeleteTask }) => {
+const TaskList = ({ tasks, onCompleteTask, onDeleteTask, onPriorityChange }) => {
 	function getStringPriority(priority){
 		if (priority === 2){
 			return "Высокий";
@@ -10,6 +10,26 @@ const TaskList = ({ tasks, onCompleteTask, onDeleteTask }) => {
 			return "Низкий";
 		}  			
 	}
+
+    async function handlePriorityUpdate(id, direction){
+        try {
+			const token = localStorage.getItem('token');	
+            const response = await fetch(`/api/tasks/priority`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json',
+						   'Authorization': `Brearer ${token}`,
+				 },
+                body: JSON.stringify({ id, direction })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                onPriorityChange(id, data.newPriority);
+            }
+        } catch (error) {
+            console.error('Не удалось изменить приоритет', error);
+        }
+    };
 
 	if ((!tasks) || (tasks.length === 0)){
 		return <p>У вас пока нет активных задач</p>
@@ -32,6 +52,14 @@ const TaskList = ({ tasks, onCompleteTask, onDeleteTask }) => {
 							{isMiddle && <span className="middle-span">Приоритет: {getStringPriority(task.priority)}</span>}	
 							{isNonUrgent && <span className="non-urgent-span">Приоритет: {getStringPriority(task.priority)}</span>}							
 						</div>
+						<div className="priority-container">
+							<button className="priority-button"
+									onClick={() => handlePriorityUpdate(task.id, 'up')} 
+									disabled={task.priority === 2}>▲</button>
+							<button className="priority-button"
+									onClick={() => handlePriorityUpdate(task.id, 'down')} 
+									disabled={task.priority === 0}>▼</button>
+						</div>
 						{!isDone && (
 							<button onClick={() => onCompleteTask(task.id)}>
 								Готово
@@ -47,21 +75,6 @@ const TaskList = ({ tasks, onCompleteTask, onDeleteTask }) => {
 			}
 		</div>
 	)
-	/*return (
-		<div>
-		{
-			tasks.map((task, index) => {
-				return (
-				<div key={index}>
-					<p>{index + 1}</p>
-					<p>Имя исполнителя - {task.name}</p>
-					<p>Фамилия исполнителя - {task.surname}</p>
-					<p>Отчество исполнителя - {task.lastname}</p>
-				</div>
-				)
-			})}
-		</div>
-	)*/
 }
 
 

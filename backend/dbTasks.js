@@ -44,7 +44,6 @@ export async function getTasksByAuthor(author) {
 function checkPriority(text){
 	const HIGH_PATTERN = /(?<!Не)Срочно|(?<!Не)Важно|(?<!НЕ)Прежде всего|(?<!Не)срочно|(?<!Не)важно/i;
     const LOW_PATTERN = /Несрочно|Неважно|Непрежде всего|не срочно|не важно|не прежде всего/i;	
-    console.log(HIGH_PATTERN.test(text));
     if (HIGH_PATTERN.test(text))
         return 2;
     else if (LOW_PATTERN.test(text))
@@ -53,7 +52,7 @@ function checkPriority(text){
 }
 
 export async function createTask(title, description, author) {
-    try {  
+    try {
         const query = 'INSERT INTO tasks (title, description, ' +
             'author, priority) VALUES (?, ?, ?, ?)';
         const [result] = await pool.execute(query,
@@ -63,7 +62,7 @@ export async function createTask(title, description, author) {
             title: title.trim(),
             status: "В планах",
             description: description.trim(),           
-            author: author.toLowerCase().trim(),
+            author: author,
             priority: checkPriority(description.trim())
         };
         return newTask;	
@@ -106,3 +105,28 @@ export async function deleteTaskById(id) {
     }
 }
 
+export async function changePriority(id, direction){
+    try {
+        const query = 'SELECT priority FROM tasks WHERE id = :id';
+        const [rows, fields] = await pool.execute(query, {id: id});        
+        if (rows.length === 0) return null;
+        let currentPriority = rows.map(row => row.priority);
+        if (direction === 'up' && currentPriority < 3) {
+            currentPriority++;
+        } else if (direction === 'down' && currentPriority >= 0) {
+            currentPriority--;
+        } else {
+            return res.status(400).json({ error: 'Приоритет уже на пределе' });
+        }   
+        await pool.query(
+            'UPDATE tasks SET priority = ?, isPriorityManual = true WHERE id = ?',
+            [currentPriority, id]
+        );
+        return currentPriority;             
+       
+    } catch (error) {
+      console.error('changePriority error: ', error)
+      if (error.code === 'ENOENT') return null;
+      throw error;         
+    }
+}

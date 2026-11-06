@@ -33,6 +33,7 @@ const TaskManager = ({user}) => {
 			console.error("Ошибка загрузки задач", error);		
 		}
 	}
+
 	const onPriorityChange = (id, priority) => {
 		setTaskList(prevList => 
 			prevList.map(task => {
@@ -146,7 +147,7 @@ const TaskManager = ({user}) => {
 			</div>
 			{addTaskIsOpened && <AddTask onCloseTask={onCloseAddTask} onAddTask={onAddTask}/>}
 			<TaskList tasks={filteredTask || []} onCompleteTask={onCompleteTask} 
-			onDeleteTask={onDeleteTask}/>
+			onDeleteTask={onDeleteTask} onPriorityChange={onPriorityChange}/>
 		</div>
 	)
 }

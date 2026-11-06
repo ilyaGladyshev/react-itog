@@ -3,8 +3,8 @@ import { URL } from 'url';
 import { verifyToken } from './jwt.js';
 import dotenv from 'dotenv';
 import { findUserBylogin, findUserByloginOnly, createUser, readUsers, readLogins } from './dbUsers.js';
-import { completeTaskById, getTasksByAuthor,
-    createTask, deleteTaskById, exportTasks} from './dbTasks.js';
+import { completeTaskById, getTasksByAuthor, changePriority,
+    createTask, deleteTaskById, exportTasks, } from './dbTasks.js';
 
 dotenv.config();
 
@@ -25,6 +25,17 @@ function getRequestBody(req){
     });
 }
 
+function authEndpoint(req){
+    let faile = false;
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    const decodedUser = verifyToken(token);
+    if (!decodedUser){
+        faile = true;
+    }
+    return {faile, decodedUser};   
+}
+
 const server = http.createServer(async (req, res) =>{
     const jsonHeader = { 'Content-Type': 'application/json; charset=utf-8'};
     const url = new URL(req.url, `http://${req.headers.host}`);
@@ -41,7 +52,7 @@ const server = http.createServer(async (req, res) =>{
         res.setHeader('Access-Control-Allow-Origin', origin);
     } 
     
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (req.method === 'OPTIONS') {
@@ -69,13 +80,11 @@ const server = http.createServer(async (req, res) =>{
             res.writeHead(200, jsonHeader);
             return res.end(JSON.stringify(users));
         } else if (req.method === 'GET' && pathname === '/api/auth/me')  {
-            const authHeader = req.headers['authorization'];
-            const token = authHeader && authHeader.split(' ')[1];
-            const decodedUser = verifyToken(token);
-            if (!decodedUser){
+            const {faile, decodedUser} = authEndpoint(req, res);
+            if (faile) {
                 res.writeHead(400, jsonHeader);
-                return res.end(JSON.stringify({ error: "Токен невалиден или просрочен"}));
-            }        
+                return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
+            };    
             const user = await findUserByloginOnly(decodedUser.login);
             if (!user){
                 res.writeHead(404, jsonHeader);
@@ -105,13 +114,11 @@ const server = http.createServer(async (req, res) =>{
         }
         else if (req.method === 'POST' && pathname === '/api/tasks'){
             const { title, description } = await getRequestBody(req);
-            const authHeader = req.headers['authorization'];
-            const token = authHeader && authHeader.split(' ')[1];
-            const decodedUser = verifyToken(token);
-            if (!decodedUser){
+            const {faile, decodedUser} = authEndpoint(req, res);
+            if (faile) {
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
-            }              
+            };                
             if (!title){
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({error: "Заполнены не все обязательные поля"}));
@@ -124,13 +131,11 @@ const server = http.createServer(async (req, res) =>{
         
         else if (req.method === 'GET' && pathname === '/api/tasks/export'){
             
-            const authHeader = req.headers['authorization'];
-            const token = authHeader && authHeader.split(' ')[1];
-            const decodedUser = verifyToken(token);
-            if (!decodedUser){
+            const {faile, decodedUser} = authEndpoint(req, res);
+            if (faile) {
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
-            }     
+            };      
             const userTasks = await getTasksByAuthor(decodedUser.id);
             const csv = await exportTasks(userTasks);
             res.writeHead(200, {
@@ -147,13 +152,11 @@ const server = http.createServer(async (req, res) =>{
                 return res.end(JSON.stringify({error: "Не указан ID задачи"}));
             }
 
-            const authHeader = req.headers['authorization'];
-            const token = authHeader && authHeader.split(' ')[1];
-            const decodedUser = verifyToken(token);
-            if (!decodedUser){
+            const {faile, decodedUser} = authEndpoint(req, res);
+            if (faile) {
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
-            }  
+            };    
 
             const success = await completeTaskById(id);
             if (success){
@@ -173,13 +176,11 @@ const server = http.createServer(async (req, res) =>{
                 return res.end(JSON.stringify({error: "Не указан ID задачи"}));
             }
 
-            const authHeader = req.headers['authorization'];
-            const token = authHeader && authHeader.split(' ')[1];
-            const decodedUser = verifyToken(token);
-            if (!decodedUser){
+            const {faile, decodedUser} = authEndpoint(req, res);
+            if (faile) {
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
-            }  
+            };    
             
             const success = await deleteTaskById(id);
             if (success){
@@ -192,16 +193,31 @@ const server = http.createServer(async (req, res) =>{
   
         }               
         else if (req.method === 'GET' && pathname === '/api/tasks')  {
-            const authHeader = req.headers['authorization'];
-            const token = authHeader && authHeader.split(' ')[1];
-            const decodedUser = verifyToken(token);
-            if (!decodedUser){
+            const {faile, decodedUser} = authEndpoint(req, res);
+            if (faile) {
                 res.writeHead(400, jsonHeader);
                 return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
-            }           
+            };              
             const userTasks = await getTasksByAuthor(decodedUser.id);
             res.writeHead(200, jsonHeader);
             return res.end(JSON.stringify(userTasks));
+        }
+        else if (req.method === 'POST' && pathname === '/api/tasks/priority')  {
+            const {faile, decodedUser} = authEndpoint(req, res);
+            if (faile) {
+                res.writeHead(400, jsonHeader);
+                return res.end(JSON.stringify({ error: "Несанкционированный доступ или сессия истекла"}));
+            }; 
+            const { id, direction } = await getRequestBody(req); 
+            const newPriority = await changePriority(id, direction);
+            if (newPriority){
+                res.writeHead(200, jsonHeader);
+                return res.end(JSON.stringify({success: true, newPriority}));    
+            } else {
+                res.writeHead(400, jsonHeader);
+                return res.end(JSON.stringify({success: false}));    
+            }
+        
         }       
         else {
             res.writeHead(404, jsonHeader);
