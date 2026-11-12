@@ -17,7 +17,7 @@ const TaskList = ({ tasks, onCompleteTask, onDeleteTask, onPriorityChange }) => 
             const response = await fetch(`/api/tasks/priority`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',
-						   'Authorization': `Brearer ${token}`,
+						   'Authorization': `Bearer ${token}`,
 				 },
                 body: JSON.stringify({ id, direction })
             });

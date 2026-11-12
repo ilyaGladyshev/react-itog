@@ -25,7 +25,7 @@ export default function RouterMenu(){
 				const response = await fetch(`${REACT_APP_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {
-						'Authorization': `Brearer ${token}`
+						'Authorization': `Bearer ${token}`
 					}
 				});
 				const data = await response.json();

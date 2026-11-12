@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import AddTask from "../AddTask/AddTask.jsx";
 import TaskList from "../TaskList/TaskList.jsx";
 import './TaskManager.css'
@@ -18,13 +18,14 @@ const TaskManager = ({user}) => {
 		if (onlyUrgent && t.priority !== 2) return false;
 		return true;
 	})
-	const loadTasks = async () => {
+
+	const loadTasks = useCallback(async () => {
 		try {
 			const token = localStorage.getItem('token');
 			const response = await fetch(`${REACT_APP_URL}/api/tasks`,{
 				method: 'GET',
 				headers: {
-					'Authorization': `Brearer ${token}`
+					'Authorization': `Bearer ${token}`
 				}
 			})
 			const data = await response.json();
@@ -32,7 +33,7 @@ const TaskManager = ({user}) => {
 		} catch (error) {
 			console.error("Ошибка загрузки задач", error);		
 		}
-	}
+	},[REACT_APP_URL]);
 
 	const onPriorityChange = (id, priority) => {
 		setTaskList(prevList => 
@@ -51,7 +52,7 @@ const TaskManager = ({user}) => {
 				method: 'POST',
 				headers: { 
 					'Content-Type': 'application/json',
-					'Authorization': `Brearer ${token}`
+					'Authorization': `Bearer ${token}`
 				},
 				body: JSON.stringify({ title, description})
 			});
@@ -63,7 +64,7 @@ const TaskManager = ({user}) => {
 
 	useEffect(() => {
 		loadTasks();
-	}, [user.login, REACT_APP_URL]);
+	}, [user.login, loadTasks]);
 
 	const onCompleteTask = async (id) => {
 		try {
@@ -72,7 +73,7 @@ const TaskManager = ({user}) => {
 				method: 'POST',
 				headers: { 
 					'Content-Type': 'application/json',
-					'Authorization': `Brearer ${token}`
+					'Authorization': `Bearer ${token}`
 				},
 				body: JSON.stringify({id})
 				
@@ -90,7 +91,7 @@ const TaskManager = ({user}) => {
 				method: 'POST',
 				headers: { 
 					'Content-Type': 'application/json',
-					'Authorization': `Brearer ${token}`
+					'Authorization': `Bearer ${token}`
 				},
 				body: JSON.stringify({id})
 			});
@@ -105,7 +106,7 @@ const TaskManager = ({user}) => {
 		const response = await fetch(`${REACT_APP_URL}/api/tasks/export`, {
 			method: 'GET',
 			headers: {
-					'Authorization': `Brearer ${token}`				
+					'Authorization': `Bearer ${token}`				
 			}
 		});
 		if (!response.ok){
