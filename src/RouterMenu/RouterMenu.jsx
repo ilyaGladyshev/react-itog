@@ -42,7 +42,7 @@ export default function RouterMenu(){
 			}
 		}
 		checkAutoLogin();
-	}, []);
+	}, [REACT_APP_URL]);
 	
 	if (loading){
 		return (

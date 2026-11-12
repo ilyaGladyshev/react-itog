@@ -63,7 +63,7 @@ const TaskManager = ({user}) => {
 
 	useEffect(() => {
 		loadTasks();
-	}, [user.login]);
+	}, [user.login, REACT_APP_URL]);
 
 	const onCompleteTask = async (id) => {
 		try {

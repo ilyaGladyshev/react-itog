@@ -39,7 +39,7 @@ const Authorisation = ({onLoginSuccess}) => {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [REACT_APP_URL]);
 
 	const onResetAuthorisation = () => {
 		localStorage.removeItem('token');

@@ -1,5 +1,3 @@
-import React, {useState} from "react";
-
 const FullInput = ({type, placeholder, propsName, onChangeProps}) => {
 	
 	switch (type){
@@ -24,9 +22,14 @@ const FullInput = ({type, placeholder, propsName, onChangeProps}) => {
 					   placeholder={placeholder}
 					   onChange={onChangeProps} 
 					   className='textarea' />
-			);		
+			);	
+		default: return (
+				<input name={propsName} 
+					   type='textarea' 
+					   placeholder={placeholder}
+					   onChange={onChangeProps} 
+					   className='textarea' />);	
 		}
-	
 	};
 
 export default FullInput;

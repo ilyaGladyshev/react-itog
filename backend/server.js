@@ -7,6 +7,7 @@ import { completeTaskById, getTasksByAuthor, changePriority,
     createTask, deleteTaskById, exportTasks, } from './dbTasks.js';
 
 dotenv.config();
+PORT = process.env.PORT;
 
 function getRequestBody(req){
     return new Promise ((resolve, reject) => {
@@ -230,9 +231,9 @@ const server = http.createServer(async (req, res) =>{
     }
 });
  
-server.listen(5000, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log('Сервер запущен');
-    console.log('Слушает запросы на порту 5000');
+    console.log('Слушает запросы на порту 5001');
     console.log("Текущая директория " + process.cwd())
 })
 
