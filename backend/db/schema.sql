@@ -1,5 +1,6 @@
 CREATE DATABASE IF NOT EXISTS task_manager CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE task_manager;
+SET NAMES utf8mb4;
 CREATE TABLE `tasks` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,

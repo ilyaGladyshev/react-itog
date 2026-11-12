@@ -1,0 +1,39 @@
+services:
+  task_mysql:
+    image: mysql:8.0
+    container_name: task_mysql_db
+    restart: always
+    command: --innodb_buffer_pool_size=64M --innodb_log_buffer_size=1M    
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - task_mysql_data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - task_network
+
+  task-backend:
+    build: .
+    container_name: task_backend_app
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      DB_HOST: task_mysql
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      PORT: 5001
+    depends_on:
+      - task_mysql
+    networks:
+      - task_network
+
+volumes:
+  task_mysql_data: {}
+
+networks:
+  task_network: 
+    name: task_network
+    driver: bridge
