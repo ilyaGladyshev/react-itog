@@ -95,6 +95,9 @@ button{
 }
 
 @media screen and (max-width: 650px) {
+   .task{
+    font-size: 0.7em;
+   }
   .delete, .complete{
     width: 50px;
     padding-left: 0;
