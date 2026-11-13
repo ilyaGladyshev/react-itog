@@ -61,7 +61,7 @@ const TaskList = ({ tasks, onCompleteTask, onDeleteTask, onPriorityChange }) => 
 									disabled={task.priority === 0}>▼</button>
 						</div>
 						{!isDone && (
-							<button onClick={() => onCompleteTask(task.id)}>
+							<button className="complete" onClick={() => onCompleteTask(task.id)}>
 								Готово
 							</button>						
 						)
