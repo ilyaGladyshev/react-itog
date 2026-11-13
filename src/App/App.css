@@ -66,7 +66,7 @@ p, strong{
 }
 
 .app-container{
-    width: 650px;
+    max-width: 650px;
     margin: 40px auto;
     padding: 20px;
     background-color: #ffffff;
