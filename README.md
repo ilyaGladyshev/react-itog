@@ -50,7 +50,7 @@ USE task_manager;
 ```
 Примените схему (создание таблиц):
 ```bash
-mysql -u root -p task_manager < react-itog/backend/db/schema.sql
+mysql -u root -p task_manager < backend/db/schema.sql
 ```
 
 ### 4. Запустите:
@@ -96,8 +96,8 @@ DB_NAME=task_manager
 
 ## Деплой
 
-- **Frontend** [https://react-itog-five.vercel.app]
-- **Backend** [https://tasks.gladyshzoda.duckdns.org]
+- **Frontend** [https://react-itog-five.vercel.app](https://react-itog-five.vercel.app)
+- **Backend** [https://tasks.gladyshzoda.duckdns.org](https://tasks.gladyshzoda.duckdns.org)
 
 Из части сетей (в т.ч. без VPN) фронтенд или API могут быть недоступны - ниже скриншоты рабочей версии.
 ![Авторизация деплой](assets/Authorization_deploy.jpg)
