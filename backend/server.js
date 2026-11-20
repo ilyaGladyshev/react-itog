@@ -47,6 +47,7 @@ const server = http.createServer(async (req, res) =>{
     const allowedOrigins = [
         'http://localhost:3000',          
         'https://chat-ts-ten.vercel.app', 
+        'https://task-front.gladyshzoda.duckdns.org',
     ];
 
     if (allowedOrigins.includes(origin)) {
