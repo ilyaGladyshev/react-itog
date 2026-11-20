@@ -96,8 +96,8 @@ DB_NAME=task_manager
 
 ## Деплой
 
-- **Frontend** [https://react-itog-five.vercel.app](https://react-itog-five.vercel.app)
-- **Backend** [https://task-front.gladyshzoda.duckdns.org](https://task-front.gladyshzoda.duckdns.org)
+- **Frontend** [https://task-front.gladyshzoda.duckdns.org](https://task-front.gladyshzoda.duckdns.org)
+- **Backend** [https://gladyshzoda.duckdns.org](https://gladyshzoda.duckdns.org)
 
 ![Авторизация деплой](assets/Authorization_deploy.jpg)
 ![Тёмная тема деплой](assets/Dark_deploy.jpg)
